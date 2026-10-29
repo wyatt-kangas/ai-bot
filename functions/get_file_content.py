@@ -4,15 +4,28 @@ schema_get_file_content = {
     "type": "function",
     "function": {
         "name": "get_file_content",
-        "description": "Lists content from a specified file relative to the working directory",
+        "description": (
+            "Reads a text file and returns its contents as a string. "
+            "The file must be an existing regular file within the tool's permitted directory "
+            "(paths resolving outside it via `..` or absolute paths are rejected). "
+            "The file is read as UTF-8 text up to a maximum of `{MAX_CHARS}` characters; "
+            "if the file exceeds this limit, it is truncated and a `[... File truncated ...]` notice is appended. "
+            "Returns the raw file contents on success, or an `Error:` prefixed message on failure. "
+            "Do not use this for binary files (images, PDFs, etc.) — it returns garbled text."
+        ),
         "parameters": {
             "type": "object",
             "properties": {
                 "file_path": {
                     "type": "string",
-                    "description": "File to list content from",
+                    "description": (
+                        "Path to the file to read, relative to the permitted directory. "
+                        "Must be an existing regular file. Paths with `..`, absolute paths, or "
+                        "references outside the permitted directory are rejected."
+                    ),
                 },
             },
+            "required": ["file_path"],
         },
     },
 }

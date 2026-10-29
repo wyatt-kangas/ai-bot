@@ -5,15 +5,36 @@ schema_run_python_file = {
     "type": "function",
     "function": {
         "name": "run_python_file",
-        "description": "Runs a `.py` file type, other arguements can be passed through straight to the file after file_path",
+        "description": (
+            "Executes a Python (.py) script with the system `python` interpreter and returns its combined console output as a string. "
+            "The script must live inside `working_directory`; paths that resolve outside it (e.g. via `..`) are rejected. "
+            "Any extra positional arguments are appended verbatim to the command line, so they arrive in the script's sys.argv[1:] exactly as given "
+            "(no shell is used, so quoting/globbing/expansion is NOT performed by this tool). "
+            "Runs synchronously with a 30 second timeout; if the script exceeds it, or raises an exception, the failure is reported in the returned string rather than raised. "
+            "Returns a human-readable result string containing the exit code on non-zero exit, `STDOUT:` / `STDERR:` prefixed sections when there is output, "
+            "and `No output produced` when the script succeeds silently. Never use this for files other than `.py`, and do not expect return values from the script - only printed output is captured."
+        ),
         "parameters": {
             "type": "object",
             "properties": {
                 "file_path": {
                     "type": "string",
-                    "description": "Python file to run, relative to the working directory",
+                    "description": (
+                        "Path to the Python script to execute, relative to `working_directory` (must end in `.py`). "
+                        "Must be an existing regular file inside `working_directory`."
+                    ),
+                },
+                "args": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": (
+                        "Optional list of command-line arguments forwarded to the script in order (each list item becomes one argv entry). "
+                        "Omit or leave empty if the script takes no arguments. Pass flags as separate items, e.g. [\"--verbose\", \"--count\", \"3\"] "
+                        "not [\"--verbose --count 3\"]. No shell interpretation is applied."
+                    ),
                 },
             },
+            "required": ["working_directory", "file_path"],
         },
     },
 }

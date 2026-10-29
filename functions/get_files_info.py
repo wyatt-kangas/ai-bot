@@ -4,15 +4,27 @@ schema_get_files_info = {
     "type": "function",
     "function": {
         "name": "get_files_info",
-        "description": "Lists files in a specified directory relative to the working directory, providing file size and directory status",
+        "description": (
+            "Lists the immediate contents of a directory and returns a plain-text listing as a string. "
+            "For each entry it reports the name, its size in bytes, and whether it is a directory, one per line, e.g. `- notes.md: file_size=1024, is_dir=False`. "
+            "The first line is a status line (`Success! <dir> is a valid directory`) or an `Error:` prefixed message on failure. "
+            "The listing is NOT recursive — subdirectory contents are not expanded; call again with that path to descend. "
+            "Hidden files (dotfiles) are included. Entries are returned in arbitrary OS order, not sorted. "
+            "Only directories inside the tool's permitted root can be listed; paths resolving outside it via `..` or absolute paths are rejected."
+        ),
         "parameters": {
             "type": "object",
             "properties": {
                 "directory": {
                     "type": "string",
-                    "description": "Directory path to list files from, relative to the working directory (default is the working directory itself)",
+                    "description": (
+                        "Path to the directory to list, relative to the permitted root. Defaults to `.` (the root itself) when omitted. "
+                        "Must be an existing directory. Paths with `..`, absolute paths, or references outside the permitted root are rejected. "
+                        "Passing a file path here returns an error — use the file-reading tool instead."
+                    ),
                 },
             },
+            "required": [],
         },
     },
 }
